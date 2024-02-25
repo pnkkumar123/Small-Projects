@@ -3,6 +3,7 @@ import Pill from './Pill';
 
 function SearchTerm() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [ActiveSuggestion,setActiveSuggestion] = useState(0)
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -50,6 +51,28 @@ function SearchTerm() {
     updatedEmails.delete(user.email);
     setSelectedUserSet(updatedEmails);
 }
+const handleKeyDown = (e)=>{
+    if(e.key === 'Backspace' && e.target.value === "" && selectedUsers.length > 0 ){
+        const lastUser = selectedUsers[selectedUsers.length - 1];
+        handleRemoveUser(lastUser);
+        setSuggestions([]);
+    }else if (e.key === "ArrowDown" && suggestions?.users?.length>0){
+        e.preventDefault();
+        setActiveSuggestion((prevIndex)=>
+        prevIndex < suggestions.users.length - 1 ? prevIndex + 1 : prevIndex
+        )
+    }else if (e.key === "ArrowUp" && suggestions?.users?.length > 0){
+        e.preventDefault();
+        setActiveSuggestion((prevIndex) =>(prevIndex >0 ? prevIndex -1 :0));
+    }else if (
+        e.key === "Enter" &&
+        ActiveSuggestion >= 0 && 
+        ActiveSuggestion < suggestions.users.length 
+    ){
+        handleSelectUser(suggestions.users[ActiveSuggestion]);
+    }
+
+};
 
 
     return (
@@ -67,7 +90,7 @@ function SearchTerm() {
                }
                
                 <div>
-                    <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder='search for a User'/>
+                    <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder='search for a User' ref={inputRef} onKeyDown={handleKeyDown}/>
                 </div>
                 {loading && <p>Loading...</p>}
                 {error && <p>Error: {error.message}</p>}
