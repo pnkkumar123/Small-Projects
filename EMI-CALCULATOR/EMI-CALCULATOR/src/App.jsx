@@ -1,9 +1,10 @@
 import React from 'react'
 import {Routes,Route} from 'react-router-dom'
-import InterestRateCalculator from './components/InterestRateCalculator'
+
 import CarInterestCalculator from './components/CarInterestCalculator'
 import PersonalInterrstCalculator from './components/PersonalInterrstCalculator'
 import NavBar from './components/NavBar'
+import InterestRateCalculator from './components/InterestRateCalculator'
 
 
 const App = () => {

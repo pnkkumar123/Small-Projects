@@ -1,113 +1,150 @@
-import React,{useEffect, useState} from 'react'
+import React,{useState,useEffect} from 'react'
+import {tenureData} from '../utils/Constants'
+import {numberWithCommas} from '../utils/config'
 
 
 const InterestRateCalculator = () => {
-    const [principle, setPrinciple] = useState("100000")
-    const [downPayment, setDownPayment] = useState("")
-    const [emi, setEmi] = useState("")
-    const [interest, setInterest] = useState("10")
-    const [tenure, setTenure] = useState("0")
-     const [Fee, setFee] = useState("")
+    const [cost, setCost] = useState(0);
+    const [interest, setInterest] = useState(12);
+    const [fee, setFee] = useState(0);
+    const [downPayment, setDownPayment] = useState(0);
+    const [tenure, setTenure] = useState(12);
+    const [emi, setEmi] = useState(0);
+  
+    const updateEmi = (e)=>{
+        if(!cost)return;
+        const dp = Number(e.target.value)
+        setDownPayment(dp.toFixed(0));
+        // calculate emi and update it
 
+        const emi = calculateEmi(dp)
+        setEmi(emi)
+    }
+    const updateDownPayment = (e)=>{
+        if(!cost)return;
+        const emi = Number(e.target.value);
+        setEmi(emi.toFixed(0));
+        // calculate dp and update it
+        const dp = calculateDownPayment(emi)
+        setDownPayment(dp)
 
-    const calculateEMI = (downpayment)=>{
-        if(!principle)return;
-
-        const loanAmt = principle - downpayment;
+    }
+    const calculateEmi = (downpayment)=>{
+        // emi = 
+        if(!cost)return;
+        const loanAmt = cost - downpayment;
         const rateOfInterest = interest/100;
-        const numOfYears = tenure/12;
+        const numOfYears = tenure /12;
+        const EMI = (loanAmt * rateOfInterest*(1+rateOfInterest)**numOfYears)/((1 + rateOfInterest)**numOfYears-1)
+          return Number(EMI/12).toFixed(0)
+        }
+    const calculateDownPayment = (emi)=>{
+        if(!cost)return;
+        const downpaymentPercent = 100 - (emi/calculateEmi(0))*100;
+        return Number((downpaymentPercent/100)*cost).toFixed(0) 
 
-        const EMI = 
-        (loanAmt * rateOfInterest * (1 + rateOfInterest)** numOfYears)/
-        ((1 + rateOfInterest) ** numOfYears - 1);
-
-        return Number(EMI/12).toFixed(0);
     }
+    useEffect(() => {
+      if(!(cost>0)){
+        setDownPayment(0)
+        setEmi(0)
+      } 
+      const emi = calculateEmi(downPayment)
+      setEmi(emi)
 
-    const calculateDP = (emi)=>{
-        if(!principle)return;
 
-        const downPaymentPercent = 100 -(emi / calculateEMI(0)) * 100;
-        return Number ((downPaymentPercent/100)* principle).toFixed(0);
-    }
-
-    useEffect(()=>{
-       if((!principle>0)){
-        setDownPayment(0);
-        setEmi(0);
-
-}
-    const emi = calculateEMI(downPayment)
-    setEmi(emi)
-    },[tenure,principle])
-const updateEMI = (e)=>{
-    if(!principle)return;
-
-    const dp = Number(e.target.value);
-    setDownPayment(dp.toFixed(0))
-
-    const emi = calculateEMI(dp);
-    setEmi(emi)
-};
-const updateDownPayment = (e)=>{
-    if(!principle)return;
-
-    const emi = Number(e.target.value);
-    setEmi(emi.toFixed(0));
-
-    const dp = calculateDP(emi);
-    setDownPayment(dp)
-}
-const totalDownPayment = ()=>{
-    return numberWithCommas (
-        (Number(downPayment) + (cost - downPayment) * (Fee/100).toFixed(0)
-    )
-    )
-}
-const totalEMI = ()=>{
-    return numberWithCommas((emi * tenure).toFixed(0))
-}
-
+    }, [tenure,cost,interest])
     
-  return (
-    <>
-    <div className="container flex flex-wrap justify-center items-center  ">
-        <div className="calculations max-w-full w-full md:max-w-lg bg-slate-300  p-5  border-2 border-dotted-black">
-           <div className="loan gap-y-5 max-w-full  p-5 border-2  ">
-           <h3>Home Loan</h3>
-            <div className="principle-amount  flex flex-wrap flex-col mb-5">
-                <input  type="range" name="" value={principle}  id="" min={0} max={10000000} step={500000} onChange={(e)=>setPrinciple(e.target.value)} />
-                <input type="number" name="" value={principle} id="" placeholder='2500000' onChange={(e)=>setPrinciple(e.target.value)}/>
-            </div>
-            <div className="interest-rate flex flex-wrap flex-col mb-5 gap-2">
-                <h3>Interest Rate</h3>
-            <input type="range" name="" id="" value={interest} onChange={(e)=>setInterest(e.target.value)} min={0} max={20} />
-                <input type="number" name="" id="" value={interest} onChange={(e)=>setInterest(e.target.value)} placeholder='2'/>
-            </div>
-            <div className="loan-tenure mb-5 gap-2 flex flex-wrap flex-col">
-                <h3>Tenure</h3>
-                <input type="range" max={10} min={1} name="" id="" value={tenure} onChange={(e)=>setTenure(e.target.value)} />
-                <input type="number" min={1} max={10} name="" id="" value={tenure} onChange={(e)=>setTenure(e.target.value)} />
-            </div>
-            <div className="loan-tenure mb-5 gap-2 flex flex-wrap flex-col">
-                <h3>Down Payment</h3>
-                <input type="range" max={10000000} step={10000} min={10000} name="" id="" value={downPayment} onChange={(e)=>setDownPayment(e.target.value)} />
-                <input type="number" min={10000} max={10000000} placeholder='10000' step={10000} name="" id="" value={downPayment} onChange={(e)=>setDownPayment(e.target.value)} />
-            </div>
-           
-            <div className="breakup-loan flex flex-col flex-wrap ">
-                <label>Loan Emi</label>
-                <span>{emi}</span>
-                <label >Total Interest Payble</label>
-                <span>2000</span>
-                <label >Total Payble</label>
-                <span>100000</span>
-            </div>
-           </div>
-        </div>
-    </div>
+    
+      
+   
+
+    return(
+        <div className="App">
+        <span className="title font-semibold">EMI CALCULATOR</span>
+        <span className="title font-semibold">Total Cost of Assets</span>
+        <input
+            type="number"
+            name=""
+            value={cost}
+            placeholder="Total Cost"
+            onChange={(e) => setCost(e.target.value)}
+            className="border border-gray-300 rounded-md p-2"
+        />
+        <span>InterestRate</span>
+        <input
+            type="number"
+            name=""
+            value={interest}
+            onChange={(e) => setInterest(e.target.value)}
+            placeholder="Processing Fee (in%)"
+            className="border border-gray-300 rounded-md p-2"
+        />
         
-    </>
+        <span>Processing Fee</span>
+        <input
+            type="number"
+            name=""
+            value={fee}
+            onChange={(e) => setFee(e.target.value)}
+            placeholder="Processing Fee (in%)"
+            className="border border-gray-300 rounded-md p-2"
+        />
+        
+        <span>Down Payment</span>
+        <span>{""} -{numberWithCommas((Number(downPayment)+(cost-downPayment)*(fee/100)).toFixed(0))}</span>
+        <div>
+            <input
+                type="range"
+                name=""
+                min={0}
+                max={cost}
+                value={downPayment}
+                onChange={updateEmi}
+                className="slider w-full"
+            />
+            <div className="lables flex justify-between">
+                <label>0%</label>
+                <b>{numberWithCommas(downPayment)}</b>
+                <label>100%</label>
+            </div>
+        </div>
+        <span>Loan Per Month</span>
+        <span className="title">{" "} total LOAN AMOUNT {numberWithCommas((emi * tenure).toFixed(0))}</span>
+        <div>
+            <input
+                type="range"
+                name=""
+                min={calculateEmi(cost)}
+                max={calculateEmi(0)}
+                value={emi}
+                onChange={updateDownPayment}
+                className="slider w-full"
+            />
+            <div className="lables flex justify-between">
+                <label>{numberWithCommas(calculateEmi(cost))}</label>
+                <b>{numberWithCommas(emi)}</b>
+                <label>{numberWithCommas(calculateEmi(emi))}</label>
+            </div>
+        </div>
+        <span>
+            <div className="tenureContainer flex justify-between">
+                {tenureData.map((t) => {
+                    return (
+                        <button
+                            key={t}
+                            onClick={() => setTenure(t)}
+                            className={`tenure ${
+                                t === tenure ? 'selected bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'
+                            }`}
+                        >
+                            {t}
+                        </button>
+                    );
+                })}
+            </div>
+        </span>
+    </div>
   )
 }
 
