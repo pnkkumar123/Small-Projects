@@ -6,6 +6,7 @@ import PersonalInterrstCalculator from './components/PersonalInterrstCalculator'
 import NavBar from './components/NavBar'
 import InterestRateCalculator from './components/InterestRateCalculator'
 import PrgoressBar from './PrgoressBar'
+import OtpLogin from './OtpLogin'
 
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
         <Route path='/carloancalculator' element={<CarInterestCalculator/>}/>
         <Route path='/personalinterestcalculator' element={<PersonalInterrstCalculator/>}/>
         <Route path='/progressbar' element={<PrgoressBar/>}/>
+        <Route path='/otplogin' element={<OtpLogin/>}/>
       </Routes>
     </div>
   )
