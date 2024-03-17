@@ -1,8 +1,10 @@
 import React from 'react'
 
-function PrgoressBar() {
+function PrgoressBar({value}) {
   return (
-    <div>PrgoressBar</div>
+    <div className='progress'>
+        <span>{value.toFixed()}%</span>
+    </div>
   )
 }
 
